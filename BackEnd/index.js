@@ -23,6 +23,6 @@ app.listen(port,()=>{
     console.log(`server running successfully at ${port}`)
 })
 
-app.use("/home",(req,res)=>{
+app.use("/",(req,res)=>{
    res.send("<h1>WELCOME</h1>")
 })
