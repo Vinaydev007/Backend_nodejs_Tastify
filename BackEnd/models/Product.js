@@ -19,7 +19,7 @@ const produtcSchema=new mongoose.Schema({
         type:String
     },
     Bestseller:{
-        type:String
+        type:Boolean
     },
     Description:{
         type:String

@@ -38,8 +38,9 @@ const vendorLogin=async (req,res)=>{
         if(!vendor || !(await bcrypt.compare(Password,vendor.Password))){
             return res.status(401).json({error:"Invalid Details"})
         }
+        const vendorId=vendor._id
         const token=jwt.sign({vendorid:vendor._id},JWT_SecretKey,{expiresIn:"1h"})
-        res.status(200).json({success:"login successfully",token})
+        res.status(200).json({success:"login successfully",token,vendorId})
         console.log("successful",token)
     } catch (error) {
         console.log(error)
@@ -56,7 +57,7 @@ const vendorLogin=async (req,res)=>{
        }
     }
 
-    const getVenderById=async(req,res)=>{
+    const getVendorById=async(req,res)=>{
        const vendorId=req.params.id
        try {
          const vendor=await Vendor.findById(vendorId).populate("Restaurant");
@@ -64,10 +65,12 @@ const vendorLogin=async (req,res)=>{
          if(!vendor){
             return res.status(404).json({message:"Vendor not found"})
          }
-         res.status(200).json({mesaage:{vendor}})
+         const vendorrestaurantid=vendor.Restaurant[0]._id
+         res.status(200).json({message:{vendor,vendorrestaurantid}})
+         console.log(vendor,vendorrestaurantid);
        } catch (error) {
         console.error(error)
-        res.status(500).json({mesaage:"internal error"})
+        res.status(500).json({message:"internal error"})
        }
     }
-module.exports={vendorRegister,vendorLogin,getAllVendors,getVenderById}
+module.exports={vendorRegister,vendorLogin,getAllVendors,getVendorById}
