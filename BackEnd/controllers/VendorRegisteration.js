@@ -57,20 +57,38 @@ const vendorLogin=async (req,res)=>{
        }
     }
 
-    const getVendorById=async(req,res)=>{
-       const vendorId=req.params.id
-       try {
-         const vendor=await Vendor.findById(vendorId).populate("Restaurant");
-         console.log(vendor);
-         if(!vendor){
-            return res.status(404).json({message:"Vendor not found"})
-         }
-         const vendorrestaurantid=vendor.Restaurant[0]._id
-         res.status(200).json({message:{vendor,vendorrestaurantid}})
-         console.log(vendor,vendorrestaurantid);
-       } catch (error) {
-        console.error(error)
-        res.status(500).json({message:"internal error"})
-       }
-    }
+    const getVendorById = async (req, res) => {
+        const vendorId = req.params.id;
+      
+        try {
+          // Find vendor by ID and populate restaurant details
+          const vendor = await Vendor.findById(vendorId).populate("Restaurant");
+      
+          // If vendor is not found
+          if (!vendor) {
+            return res.status(404).json({ message: "Vendor Not Found" });
+          }
+      
+          let vendorrestaurantid = null;
+      
+          // Check if vendor has at least one restaurant
+          if (vendor.Restaurant && vendor.Restaurant.length > 0) {
+            vendorrestaurantid = vendor.Restaurant[0]._id;
+          }
+      
+          // Send response
+          res.status(200).json({
+            vendor,
+            vendorrestaurantid,
+          });
+      
+          console.log("Vendor Data:", vendor);
+          console.log("Restaurant ID:", vendorrestaurantid);
+      
+        } catch (error) {
+          console.error("Error fetching vendor:", error);
+          res.status(500).json({ message: "Internal Server Error" });
+        }
+      };
+      
 module.exports={vendorRegister,vendorLogin,getAllVendors,getVendorById}

@@ -28,7 +28,6 @@ app.use(cors(corsOptions));
 // app.options('*', cors(corsOptions));
 
 
-
 app.use(bodyparser.json());
 
 // ✅ Static path for uploaded images
