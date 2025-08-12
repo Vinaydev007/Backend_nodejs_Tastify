@@ -17,7 +17,7 @@ const port = process.env.PORT || 5000;
 const corsOptions = {
   origin: 'https://vendor-iu-eight.vercel.app', // frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'], // add any custom headers you use
+  allowedHeaders: ['Content-Type','Authorization','token'], // add any custom headers you use
   credentials: true, // if you use cookies or auth headers
 };
 
@@ -25,7 +25,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Explicitly handle preflight OPTIONS requests
-// app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 
 app.use(bodyparser.json());
