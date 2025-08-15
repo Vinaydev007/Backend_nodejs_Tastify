@@ -50,6 +50,7 @@ const vendorLogin=async (req,res)=>{
     const getAllVendors=async(req,res)=>{
        try {
         const vendors= await Vendor.find().populate("Restaurant");
+        console.log(vendors)
         res.json({vendors})
        } catch (error) {
         console.error(error);

@@ -75,3 +75,4 @@ module.exports = {
   addfirm: [upload.single('image'), addfirm],
   deleteRestaurantById
 };
+

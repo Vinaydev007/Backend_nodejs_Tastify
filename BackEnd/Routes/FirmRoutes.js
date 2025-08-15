@@ -35,3 +35,5 @@ router.post("/add-firm", verifyToken, RestaurantController.addfirm);
 router.delete("/:restaurantId", RestaurantController.deleteRestaurantById);
 
 module.exports = router;
+
+
