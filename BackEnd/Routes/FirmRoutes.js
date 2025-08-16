@@ -1,39 +1,55 @@
-// const express=require('express')
-// const RestaurantController=require('../controllers/RestaurantController');
-// const verifyToken =require("../middleware/verifyToken")
+// const express = require("express");
+// const path = require("path");
+// const multer = require("multer");
+// const RestaurantController = require("../controllers/RestaurantController");
+// const verifyToken = require("../middleware/verifyToken");
 
-// const router=express.Router()
+// const router = express.Router();
 
-// router.post('/add-firm',verifyToken,RestaurantController.addfirm);
-// router.get('/uploads/:imageName',(req,res)=>{
-//    const imageName=req.params.imageName;
-//    res.headersSent('Content-Type','image/jpeg');
-//    res.sendFile(path.join(__dirname,'..','uploads',imageName));
-// })
-// router.delete('/:restaurantId',RestaurantController.deleteRestaurantById)
+// // ✅ Multer setup
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
+// const upload = multer({ storage });
 
+// // ✅ Add firm
+// router.post(
+//   "/add-firm",
+//   verifyToken,
+//   upload.single("image"),
+//   RestaurantController.addfirm
+// );
 
-// module.exports=router;
+// // ✅ Delete restaurant
+// router.delete("/:restaurantId", RestaurantController.deleteRestaurantById);
+
+// module.exports = router;
+
 const express = require("express");
 const path = require("path");
-const RestaurantController = require("../controllers/RestaurantController");
 const verifyToken = require("../middleware/verifyToken");
+const RestaurantController = require("../controllers/RestaurantController");
 
 const router = express.Router();
 
-// ✅ Add firm
-router.post("/add-firm", verifyToken, RestaurantController.addfirm);
+// POST /firm/add-firm (JWT + file upload)
+router.post(
+  "/add-firm",
+  verifyToken,
+  RestaurantController.upload.single("image"),
+  RestaurantController.addfirm
+);
 
-// ✅ Serve firm images
-// router.get("/uploads/:imageName", (req, res) => {
-//   const imageName = req.params.imageName;
-//   res.setHeader("Content-Type", "image/jpeg");
-//   res.sendFile(path.join(__dirname, "..", "uploads", imageName));
-// });
-
-// ✅ Delete restaurant by ID
+// DELETE /firm/:restaurantId
 router.delete("/:restaurantId", RestaurantController.deleteRestaurantById);
 
 module.exports = router;
+
+
 
 

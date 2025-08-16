@@ -63,48 +63,76 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const vendorRoutes = require("./Routes/vendorRouting");
-const firmRoutes = require("./Routes/FirmRoutes");
-const productRoutes = require("./Routes/ProductRoutes");
 const bodyparser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
+
+// Routes
+const vendorRoutes = require("./Routes/vendorRouting");
+const firmRoutes = require("./Routes/FirmRoutes");
+const productRoutes = require("./Routes/ProductRoutes");
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// ✅ CORS configuration
+// Ensure uploads directory exists (important for Render)
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// CORS
 const corsOptions = {
-  origin: ["https://vendor-iu-eight.vercel.app", "http://localhost:5173"], // frontend domain
+  origin: [
+    "https://vendor-iu-eight.vercel.app",
+    "http://localhost:5173",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "token", "Token"], // lowercase + uppercase
+  allowedHeaders: ["Content-Type", "Authorization", "token", "Token"],
   credentials: true,
 };
-
-// ✅ Enable CORS for all routes
 app.use(cors(corsOptions));
 
-// ✅ Handle all OPTIONS (preflight) requests
-// app.options("*", cors(corsOptions));
-
+// Parse JSON (for non-multipart requests)
 app.use(bodyparser.json());
 
-// ✅ Serve static files for uploaded images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve static files (uploaded images)
+app.use("/uploads", express.static(uploadsDir));
 
-// ✅ API Routes
+// Health check (useful for Render)
+app.get("/health", (_req, res) => {
+  res.json({ ok: true, time: new Date().toISOString() });
+});
+
+// API Routes
 app.use("/vendor", vendorRoutes);
 app.use("/firm", firmRoutes);
 app.use("/product", productRoutes);
 
-// ✅ Default route
-app.get("/", (req, res) => {
-  res.send("<h1>WELCOME</h1>");
+// Default route
+app.get("/", (_req, res) => {
+  res.type("text/plain").send("OK");
 });
 
-// ✅ Connect to MongoDB and start server
+// 404 JSON (prevents HTML error pages)
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found", path: req.originalUrl });
+});
+
+// Global error handler (always JSON)
+app.use((err, _req, res, _next) => {
+  console.error("Global error:", err);
+  const status = err.status || 500;
+  res.status(status).json({
+    message: err.message || "Internal Server Error",
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+  });
+});
+
+// Connect DB & start server
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {
@@ -114,4 +142,3 @@ mongoose
     });
   })
   .catch((error) => console.error("❌ MongoDB connection error:", error));
-
