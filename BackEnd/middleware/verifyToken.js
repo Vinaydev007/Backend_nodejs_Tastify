@@ -1,71 +1,34 @@
+const Vendor = require('../models/Vendor');
+const jwt = require('jsonwebtoken');
+const dotEnv = require('dotenv');
 
-// const Vendor = require('../models/Vendor');
-// const jwt = require('jsonwebtoken');
-// const dotenv = require('dotenv');
+dotEnv.config()
 
-// dotenv.config();
-// const JWT_SECRET = process.env.SecretKey;
+const secretKey = process.env.SecretKey
 
-// const verifyToken = async (req, res, next) => {
-//   try {
-//     // ✅ Support both "token" header and "Authorization: Bearer <token>"
-//     let token = req.headers.token;
-//     console.log(token);
-//     if (!token && req.headers.authorization) {
-//       const parts = req.headers.authorization.split(" ");
-//       if (parts.length === 2 && parts[0] === "Bearer") {
-//         token = parts[1];
-//       }
-//     }
 
-//     if (!token) {
-//       return res.status(401).json({ error: "Token is required" });
-//     }
+const verifyToken = async(req, res, next) => {
+    const token = req.headers.token;
 
-//     const decoded = jwt.verify(token, JWT_SECRET);
-//     if (!decoded || !decoded.vendorid) {
-//       return res.status(401).json({ error: "Invalid token" });
-//     }
+    if (!token) {
+        return res.status(401).json({ error: "Token is required" });
+    }
+    try {
+        const decoded = jwt.verify(token, secretKey)
+        const vendor = await Vendor.findById(decoded.vendorId);
 
-//     const vendor = await Vendor.findById(decoded.vendorid);
-//     if (!vendor) {
-//       return res.status(404).json({ error: "Vendor not found" });
-//     }
+        if (!vendor) {
+            return res.status(404).json({ error: "vendor not found" })
+        }
 
-//     req.vendorId = vendor._id;
-//     next();
-//   } catch (error) {
-//     console.error("Token verification error:", error.message);
-//     return res.status(401).json({ error: "Invalid token" });
-//   }
-// };
+        req.vendorId = vendor._id
 
-// module.exports = verifyToken;
-
-const SecretKey = process.env.SecretKey;
-
-const verifyToken = async (req, res, next) => {
-  try {
-    let token = req.headers.token;
-    if (!token && req.headers.authorization) {
-      const parts = req.headers.authorization.split(" ");
-      if (parts.length === 2 && parts[0] === "Bearer") token = parts[1];
+        next()
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({ error: "Invalid token" });
     }
 
-    if (!token) return res.status(401).json({ error: "Token is required" });
+}
 
-    const decoded = jwt.verify(token, SecretKey);
-    if (!decoded || !decoded.vendorid) {
-      return res.status(401).json({ error: "Invalid token" });
-    }
-
-    const vendor = await Vendor.findById(decoded.vendorid);
-    if (!vendor) return res.status(404).json({ error: "Vendor not found" });
-
-    req.vendorId = vendor._id;
-    next();
-  } catch (error) {
-    console.error("Token verification error:", error.message);
-    return res.status(401).json({ error: "Invalid or expired token" });
-  }
-};
+module.exports = verifyToken

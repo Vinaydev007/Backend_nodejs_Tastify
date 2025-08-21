@@ -1,50 +1,44 @@
-const mongoose=require("mongoose")
-const Product = require("./Product")
+const mongoose = require('mongoose');
 
-const RestaurantSchema=new mongoose.Schema({
-    firmname:{
-        type:String,
-        required:true,
-        unique:true
+const firmSchema = new mongoose.Schema({
+    firmName: {
+        type: String,
+        required: true,
+        unique: true
     },
-    area:{
-        type:String,
-        required:true
+    area: {
+        type: String,
+        required: true,
     },
-    category:{
-        type:[
-            {
-                type:String,
-                enum:['veg','non-veg']
-            }
-        ]
+    category: {
+        type: [{
+            type: String,
+            enum: ['veg', 'non-veg']
+        }]
     },
-    region:{
-        type:[
-            {
-                type:String,
-                enum:['south-indian','north-indian','bakery','chinese']
-            }
-        ]
+    region: {
+        type: [{
+            type: String,
+            enum: ['south-indian', 'north-indian', 'chinese', 'bakery']
+        }]
     },
-    offer:{
-         type:String
-    },
-    image:{
-        type:String
-    },
-  vendor:[
-    {
-      type:mongoose.Schema.Types.ObjectId,
-      ref:'vendor'
-    }
-  ],
-  Products:[{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:'Productt'
-}]
-})
+    offer: {
+        type: String,
 
-const Restaurant=mongoose.model('Restaurant',RestaurantSchema)
+    },
+    image: {
+        type: String
+    },
+    vendor: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor'
+    }],
+    products: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }]
+});
 
-module.exports=Restaurant
+const Firm = mongoose.model('Firm', firmSchema);
+
+module.exports = Firm

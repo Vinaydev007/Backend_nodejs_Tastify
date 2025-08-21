@@ -1,35 +1,35 @@
-const mongoose=require('mongoose')
-const Restaurant = require('./Restaurant')
+const mongoose = require('mongoose');
 
-
-const produtcSchema=new mongoose.Schema({
-    ProductName:{
-        type:String,
-        required:true
+const productSchema = new mongoose.Schema({
+    productName: {
+        type: String,
+        required: true
     },
-    Price:{
-        type:String,
-        required:true
+    price: {
+        type: String,
+        required: true
     },
-    Category:[{
-        type:String,
-        enum:["veg","non-veg"]
-    }],
-    image:{
-        type:String
+    category: {
+        type: [{
+            type: String,
+            enum: ['veg', 'non-veg']
+        }]
     },
-    Bestseller:{
-        type:Boolean
+    image: {
+        type: String
     },
-    Description:{
-        type:String
+    bestSeller: {
+        type: Boolean
     },
-    Restaurant:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Restaurant"
+    description: {
+        type: String
+    },
+    firm: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Firm'
     }]
-})
+});
 
-const Product=mongoose.model("Product",produtcSchema);
+const Product = mongoose.model('Product', productSchema);
 
-module.exports=Product
+module.exports = Product
