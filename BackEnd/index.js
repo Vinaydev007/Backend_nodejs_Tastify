@@ -1,21 +1,21 @@
 const express = require("express");
 const dotEnv = require('dotenv');
 const mongoose = require('mongoose');
-const vendorRoutes = require('./routes/vendorRoutes');
+const vendorRoutes = require('./Routes/vendorRouting');
 const bodyParser = require('body-parser');
-const firmRoutes = require('./routes/firmRoutes');
-const productRoutes = require('./routes/productRoutes');
+const firmRoutes = require('./Routes/FirmRoutes');
+const productRoutes = require('./Routes/ProductRoutes');
 const cors = require('cors');
-const path = require('path')
+const path = require('path');
 
 const app = express()
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 dotEnv.config();
 app.use(cors())
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("MongoDB connected successfully!"))
     .catch((error) => console.log(error))
 
